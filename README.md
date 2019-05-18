@@ -13,6 +13,6 @@
 
 # https://github.com/aws-samples/aws-reinvent-2018-trivia-game/blob/ca0e3bd20d959639479889d5b65231ec4a11f4fc/trivia-backend/cdk/ecs-service.ts
 
-./codebuild_build.sh -i aws/codebuild/nodejs10.14.1 -a . -b ml-backend/buildspec.yml -e ml-backend/localtest.env 
+./codebuild_build.sh -i aws/codebuild/nodejs10.14.1 -a . -b ml-backend/buildspec.yml
 
 ./codebuild_build.sh -i aws/codebuild/python3.6.5 -c -a . -b ml-training/movielens/buildspec.yml -e ml-training/movielens/localtest.env 

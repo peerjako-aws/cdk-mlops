@@ -9,6 +9,7 @@ import s3 = require('@aws-cdk/aws-s3');
 
 import { githubOwner, repoName, secretGitHubOauthArn } from '../../config'
 import { PolicyStatementEffect } from '@aws-cdk/aws-iam';
+import { BuildEnvironmentVariableType } from '@aws-cdk/aws-codebuild';
 
 interface mlPipelineStackProps extends cdk.StackProps {
   mlProject: string;
@@ -156,9 +157,44 @@ export class MlPipelineStack extends cdk.Stack {
       runOrder: 2
     });
 
+
+    const projectQATest = new codebuild.PipelineProject(this, 'QATestProject', {
+      buildSpec: './ml-test/' + props.mlProject + '/buildspec.yml',
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_PYTHON_3_7_1
+      },
+      environmentVariables: {
+        CONFIGURATION_FILE: {
+          type: BuildEnvironmentVariableType.PlainText,
+          value: 'configuration_qa.json'
+        }
+      }
+    });
+    
+    projectQATest.addToRolePolicy(new iam.PolicyStatement(PolicyStatementEffect.Allow)
+      .addResource('*')
+      .addAction('sagemaker:*')
+      .addAction('logs:CreateLogGroup')
+      .addAction('logs:CreateLogStream')
+      .addAction('logs:PutLogEvents')
+      .addAction('logs:DescribeLogStreams')
+      .addAction('logs:GetLogEvents')
+    );
+
+    const qaTestAction = new codepipeline_actions.CodeBuildAction({
+      actionName: 'ml-qa-test',
+      input: trainingOutput,
+      project: projectQATest,
+      runOrder: 3
+    })
+
+    const qaTestApproval = new codepipeline_actions.ManualApprovalAction({
+      actionName: 'ml-qa-approval',
+      runOrder: 4
+    })
     pipeline.addStage({
       name: 'ml-qa-backend',
-      actions: [qaBackendChangeSet, qaBackend],
+      actions: [qaBackendChangeSet, qaBackend, qaTestAction, qaTestApproval],
     });
 
     const prodBackendChangeSet = new codepipeline_actions.CloudFormationCreateReplaceChangeSetAction({
@@ -177,9 +213,40 @@ export class MlPipelineStack extends cdk.Stack {
       runOrder: 2
     });
 
+
+    const projectProdTest = new codebuild.PipelineProject(this, 'ProdTestProject', {
+      buildSpec: './ml-test/' + props.mlProject + '/buildspec.yml',
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_PYTHON_3_7_1
+      },
+      environmentVariables: {
+        CONFIGURATION_FILE: {
+          type: BuildEnvironmentVariableType.PlainText,
+          value: 'configuration_prod.json'
+        }
+      }
+    });
+    
+    projectProdTest.addToRolePolicy(new iam.PolicyStatement(PolicyStatementEffect.Allow)
+      .addResource('*')
+      .addAction('sagemaker:*')
+      .addAction('logs:CreateLogGroup')
+      .addAction('logs:CreateLogStream')
+      .addAction('logs:PutLogEvents')
+      .addAction('logs:DescribeLogStreams')
+      .addAction('logs:GetLogEvents')
+    );
+
+    const prodTestAction = new codepipeline_actions.CodeBuildAction({
+      actionName: 'ml-qa-prod',
+      input: trainingOutput,
+      project: projectProdTest,
+      runOrder: 3
+    })
+
     pipeline.addStage({
       name: 'ml-prod-backend',
-      actions: [prodBackendChangeSet, prodBackend],
+      actions: [prodBackendChangeSet, prodBackend, prodTestAction],
     });
 
   }

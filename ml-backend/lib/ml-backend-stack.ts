@@ -22,12 +22,13 @@ export class MlBackendStack extends cdk.Stack {
     const parentStackName = config.Parameters.ParentStackName + '';
     const modelData = config.Parameters.ModelData + '';
     const containerImage = config.Parameters.ContainerImage + '';
-
+    const timeStamp = config.Parameters.Timestamp + '';
+    
     // Define a unique releasename
     const releaseName = environment + '-' 
     + parentStackName + '-' 
-    + commitID
-    + '-' + (new Date).getTime();
+    + commitID + '-'
+    + timeStamp;
 
     // Create a role that sagemaker can use which can access the model S3 bucket
     const sagemakerRole = new iam.Role(this, 'SagemakerRole', {
