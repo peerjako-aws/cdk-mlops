@@ -4,9 +4,4 @@ node_modules
 
 # CDK asset staging directory
 .cdk.staging
-
-config.*
-
 build/
-.DS_Store
-training-data/

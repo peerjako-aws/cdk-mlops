@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import cdk = require('@aws-cdk/cdk');
-import { CdkMlopsStack } from '../lib/cdk-mlops-stack';
+import { IrisDnnInitStack } from '../lib/iris-dnn-init-stack';
 
 const app = new cdk.App();
-new CdkMlopsStack(app, 'CdkMlopsStack');
+new IrisDnnInitStack(app, 'IrisDnnInitStack');

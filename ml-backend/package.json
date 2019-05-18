@@ -1,8 +1,8 @@
 {
-  "name": "cdk-mlops",
+  "name": "ml-backend",
   "version": "0.1.0",
   "bin": {
-    "cdk-mlops": "bin/cdk-mlops.js"
+    "ml-backend": "bin/ml-backend.js"
   },
   "scripts": {
     "build": "tsc",
@@ -15,6 +15,9 @@
     "aws-cdk": "^0.30.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-iam": "^0.30.0",
+    "@aws-cdk/aws-s3": "^0.30.0",
+    "@aws-cdk/aws-sagemaker": "^0.30.0",
     "@aws-cdk/cdk": "^0.30.0",
     "source-map-support": "^0.5.9"
   }

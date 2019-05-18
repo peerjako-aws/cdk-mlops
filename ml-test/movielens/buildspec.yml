@@ -1,0 +1,13 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Installing boto3 and sagemaker"
+      - pip3 install boto3
+      - pip3 install sagemaker
+
+  build:
+    commands:
+      - echo "Running test.py"
+      - python3 ml-test/movielens/test.py "$STACK_NAME" "prepdata_result.json" "ml-backend/$CONFIGURATION_FILE"

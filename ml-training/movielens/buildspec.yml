@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Installing boto3 and sagemaker"
+      - pip3 install boto3
+      - pip3 install sagemaker
+
+  build:
+    commands:
+      - echo "Running prepdata.py"
+      - python3 ml-training/movielens/prepdata.py "$BUCKET_NAME" "$GLUE_DATABASE_NAME"
+      - echo "Running train.py"
+      - python3 ml-training/movielens/train.py "$SAGEMAKER_ROLE_ARN" "$BUCKET_NAME" "$STACK_NAME" $CODEBUILD_RESOLVED_SOURCE_VERSION
+  post_build:
+    commands:
+      - echo "Cleaning. We leave ua.test for later predictor tests"
+      - rm -f u.data
+      - rm -f ua.base*  
+artifacts:
+  files:
+    - '**/*'

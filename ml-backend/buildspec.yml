@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      # Install CDK & jq, upgrade npm
+      - apt-get update
+      - apt-get install -y jq
+      - npm install -g npm@6.4.1
+      - npm install -g aws-cdk@0.30.0
+
+  build:
+    commands:
+
+      # Synthesize CloudFormation templates
+      - cd $CODEBUILD_SRC_DIR/ml-backend
+      - npm ci
+      - npm run build
+      - cdk synth -o build --app 'node bin/ml-backend.js'
+
+artifacts:
+  files:
+    - ml-backend/build/*
+  discard-paths: yes
