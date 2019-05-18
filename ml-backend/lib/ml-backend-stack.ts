@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import fs = require('fs');
 import sagemaker = require('@aws-cdk/aws-sagemaker');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
@@ -7,10 +8,20 @@ export class MlBackendStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
     
+    const configFileName = process.env.CONFIG_FILE_NAME + '';
+    const config = JSON.parse(fs.readFileSync(configFileName, 'utf8'));
+
+    const bucketName = config.Parameters.BucketName + '';
+    const commitID = config.Parameters.CommitID + '';
+    const environment = config.Parameters.Environment + '';
+    const parentStackName = config.Parameters.ParentStackName + '';
+    const modelData = config.Parameters.ModelData + '';
+    const containerImage = config.Parameters.ContainerImage + '';
+
     // Define a unique releasename
-    const releaseName = process.env.ENVIRONMENT + '-' 
-    + this.parentApp.name + '-' 
-    + process.env.CODEBUILD_RESOLVED_SOURCE_VERSION 
+    const releaseName = environment + '-' 
+    + parentStackName + '-' 
+    + commitID
     + '-' + (new Date).getTime();
 
     // Create a role that sagemaker can use which can access the model S3 bucket
@@ -19,7 +30,6 @@ export class MlBackendStack extends cdk.Stack {
     });
     sagemakerRole.attachManagedPolicy('arn:aws:iam::aws:policy/AmazonSageMakerFullAccess');
 
-    const bucketName = process.env.BUCKET_NAME + ''
     const mlopsBucket = s3.Bucket.import(this, bucketName, {
       bucketName: bucketName
     })
@@ -28,8 +38,8 @@ export class MlBackendStack extends cdk.Stack {
     // Create the sagemaker model
     const model = new sagemaker.CfnModel(this, 'model', {
       primaryContainer: {
-        image: process.env.SAGEMAKER_IMAGE + '',
-        modelDataUrl: 's3://'+ bucketName + "/" + process.env.MODEL_PATH,        
+        image: containerImage,
+        modelDataUrl: modelData,        
       },
       executionRoleArn: sagemakerRole.roleArn,
       modelName: releaseName
