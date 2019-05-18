@@ -10,3 +10,4 @@ config.*
 build/
 .DS_Store
 training-data/
+artifacts*

@@ -4,11 +4,16 @@ import sagemaker = require('@aws-cdk/aws-sagemaker');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 
+
+interface mlBackendStackProps extends cdk.StackProps {
+  configFileName: string;
+}
+
 export class MlBackendStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.Construct, id: string, props: mlBackendStackProps) {
     super(scope, id, props);
     
-    const configFileName = process.env.CONFIG_FILE_NAME + '';
+    const configFileName = props.configFileName + '';
     const config = JSON.parse(fs.readFileSync(configFileName, 'utf8'));
 
     const bucketName = config.Parameters.BucketName + '';

@@ -120,35 +120,29 @@ export class MlPipelineStack extends cdk.Stack {
       actions: [trainingAction],
     });
 
-    const projectQABackend = new codebuild.PipelineProject(this, 'QABackendProject', {
+    const projectQABackend = new codebuild.PipelineProject(this, 'BackendCDKProject', {
       buildSpec: './ml-backend/buildspec.yml',
       environment: {
         buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_14_1
-      },
-      environmentVariables: {
-        CONFIG_FILE_NAME: {
-          type: codebuild.BuildEnvironmentVariableType.PlainText,
-          value: 'configuration_qa.json'
-        }
       }
     });
 
-    const qaBackendCDKBuildOutput = new codepipeline.Artifact();
-    const qaBackendCDKBuildAction = new codepipeline_actions.CodeBuildAction({
-      actionName: 'ml-qa-backend-cdk',
+    const backendCDKBuildOutput = new codepipeline.Artifact();
+    const backendCDKBuildAction = new codepipeline_actions.CodeBuildAction({
+      actionName: 'ml-backend-cdk',
       input: trainingOutput,
-      output: qaBackendCDKBuildOutput,
+      output: backendCDKBuildOutput,
       project: projectQABackend
     })
 
     pipeline.addStage({
-      name: 'ml-qa-backend-cdk',
-      actions: [qaBackendCDKBuildAction],
+      name: 'ml-backend-cdk',
+      actions: [backendCDKBuildAction],
     });    
 
     const qaBackendChangeSet = new codepipeline_actions.CloudFormationCreateReplaceChangeSetAction({
       actionName: 'ml-qa-backend-changeset',
-      templatePath: qaBackendCDKBuildOutput.atPath('template.yaml'),
+      templatePath: backendCDKBuildOutput.atPath('MlQABackendStack.template.yaml'),
       adminPermissions: true,
       changeSetName: 'ml-qa-backend-changeset',
       stackName: 'ml-qa-backend',
@@ -166,5 +160,27 @@ export class MlPipelineStack extends cdk.Stack {
       name: 'ml-qa-backend',
       actions: [qaBackendChangeSet, qaBackend],
     });
+
+    const prodBackendChangeSet = new codepipeline_actions.CloudFormationCreateReplaceChangeSetAction({
+      actionName: 'ml-prod-backend-changeset',
+      templatePath: backendCDKBuildOutput.atPath('MlProdBackendStack.template.yaml'),
+      adminPermissions: true,
+      changeSetName: 'ml-prod-backend-changeset',
+      stackName: 'ml-prod-backend',
+      runOrder: 1
+    });
+
+    const prodBackend = new codepipeline_actions.CloudFormationExecuteChangeSetAction({
+      actionName: 'ml-prod-backend',
+      changeSetName: 'ml-prod-backend-changeset',
+      stackName: 'ml-prod-backend',
+      runOrder: 2
+    });
+
+    pipeline.addStage({
+      name: 'ml-prod-backend',
+      actions: [prodBackendChangeSet, prodBackend],
+    });
+
   }
 }
