@@ -145,15 +145,15 @@ export class MlPipelineStack extends cdk.Stack {
       actionName: 'ml-qa-backend-changeset',
       templatePath: backendCDKBuildOutput.atPath('MlQABackendStack.template.yaml'),
       adminPermissions: true,
-      changeSetName: 'ml-qa-backend-changeset',
-      stackName: 'ml-qa-backend',
+      changeSetName: 'ml-qa-backend-changeset-' + props.mlProject,
+      stackName: 'ml-qa-backend-' + props.mlProject,
       runOrder: 1
     });
 
     const qaBackend = new codepipeline_actions.CloudFormationExecuteChangeSetAction({
       actionName: 'ml-qa-backend',
-      changeSetName: 'ml-qa-backend-changeset',
-      stackName: 'ml-qa-backend',
+      changeSetName: 'ml-qa-backend-changeset-' + props.mlProject,
+      stackName: 'ml-qa-backend-' + props.mlProject,
       runOrder: 2
     });
 
@@ -201,15 +201,15 @@ export class MlPipelineStack extends cdk.Stack {
       actionName: 'ml-prod-backend-changeset',
       templatePath: backendCDKBuildOutput.atPath('MlProdBackendStack.template.yaml'),
       adminPermissions: true,
-      changeSetName: 'ml-prod-backend-changeset',
-      stackName: 'ml-prod-backend',
+      changeSetName: 'ml-prod-backend-changeset-' + props.mlProject,
+      stackName: 'ml-prod-backend-' + props.mlProject,
       runOrder: 1
     });
 
     const prodBackend = new codepipeline_actions.CloudFormationExecuteChangeSetAction({
       actionName: 'ml-prod-backend',
-      changeSetName: 'ml-prod-backend-changeset',
-      stackName: 'ml-prod-backend',
+      changeSetName: 'ml-prod-backend-changeset-' + props.mlProject,
+      stackName: 'ml-prod-backend-' + props.mlProject,
       runOrder: 2
     });
 
