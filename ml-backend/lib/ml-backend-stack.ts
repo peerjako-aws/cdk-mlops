@@ -23,7 +23,9 @@ export class MlBackendStack extends cdk.Stack {
     const modelData = config.Parameters.ModelData + '';
     const containerImage = config.Parameters.ContainerImage + '';
     const timeStamp = config.Parameters.Timestamp + '';
-    
+
+    const containerEnvironment = config.Parameters.ContainerEnvironment;
+
     // Define a unique releasename
     const releaseName = environment + '-' 
     + parentStackName + '-' 
@@ -45,7 +47,8 @@ export class MlBackendStack extends cdk.Stack {
     const model = new sagemaker.CfnModel(this, 'model', {
       primaryContainer: {
         image: containerImage,
-        modelDataUrl: modelData,        
+        modelDataUrl: modelData,
+        environment: containerEnvironment
       },
       executionRoleArn: sagemakerRole.roleArn,
       modelName: releaseName

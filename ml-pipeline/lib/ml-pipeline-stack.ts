@@ -238,7 +238,7 @@ export class MlPipelineStack extends cdk.Stack {
     );
 
     const prodTestAction = new codepipeline_actions.CodeBuildAction({
-      actionName: 'ml-qa-prod',
+      actionName: 'ml-prod-test',
       input: trainingOutput,
       project: projectProdTest,
       runOrder: 3
