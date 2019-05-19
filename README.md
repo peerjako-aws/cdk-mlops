@@ -26,6 +26,10 @@ Each example will create a code pipeline that looks likes this:
 
 
 
+![mlopspipeline](img/mlops-pipeline.png)
+
+
+
 ## Getting started
 
 ### CDK

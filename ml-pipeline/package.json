@@ -21,6 +21,7 @@
     "@aws-cdk/aws-iam": "^0.30.0",
     "@aws-cdk/aws-s3": "^0.30.0",
     "@aws-cdk/aws-secretsmanager": "^0.30.0",
+    "@aws-cdk/aws-sns": "^0.30.0",
     "@aws-cdk/cdk": "^0.30.0",
     "source-map-support": "^0.5.9"
   }

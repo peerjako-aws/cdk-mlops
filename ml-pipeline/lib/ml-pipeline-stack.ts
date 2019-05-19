@@ -6,6 +6,7 @@ import codepipeline_actions = require('@aws-cdk/aws-codepipeline-actions');
 import codebuild = require('@aws-cdk/aws-codebuild');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
+import sns = require('@aws-cdk/aws-sns');
 
 import { githubOwner, repoName, secretGitHubOauthArn } from '../../config'
 import { PolicyStatementEffect } from '@aws-cdk/aws-iam';
@@ -188,10 +189,14 @@ export class MlPipelineStack extends cdk.Stack {
       runOrder: 3
     })
 
+    const approvalTopic = new sns.Topic(this, 'ApprovalTopic');
+    approvalTopic.subscribeEmail('ApprovalSubscription', config.APPROVAL_EMAIL)
     const qaTestApproval = new codepipeline_actions.ManualApprovalAction({
       actionName: 'ml-qa-approval',
+      notificationTopic: approvalTopic,
       runOrder: 4
     })
+
     pipeline.addStage({
       name: 'ml-qa-backend',
       actions: [qaBackendChangeSet, qaBackend, qaTestAction, qaTestApproval],
