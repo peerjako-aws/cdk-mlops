@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Installing boto3 and sagemaker"
+      - pip3 install boto3
+      - pip3 install tensorflow
+      - pip3 install sagemaker
+
+  build:
+    commands:
+      - echo "Running train.py"
+      - python3 ml-training/iris-dnn/train.py "$SAGEMAKER_ROLE_ARN" "$BUCKET_NAME" "$STACK_NAME" $CODEBUILD_RESOLVED_SOURCE_VERSION
+
+artifacts:
+  files:
+    - '**/*'
