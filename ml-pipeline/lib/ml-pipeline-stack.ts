@@ -75,14 +75,14 @@ export class MlPipelineStack extends cdk.Stack {
     }
     buildEnvVariables['STACK_NAME'] = {
       type: codebuild.BuildEnvironmentVariableType.PlainText,
-      value: this.parentApp.name
+      value: this.stackName
     }
 
     const trainingOutput = new codepipeline.Artifact();
     const project = new codebuild.PipelineProject(this, 'TrainingProject', {
       buildSpec: './ml-training/' + props.mlProject + '/buildspec.yml',
       environment: {
-        buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_PYTHON_3_7_1
+        buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_PYTHON_3_6_5
       },
       environmentVariables: buildEnvVariables
     });
