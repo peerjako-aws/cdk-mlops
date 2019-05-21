@@ -3,7 +3,7 @@ import fs = require('fs');
 import sagemaker = require('@aws-cdk/aws-sagemaker');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-
+import ssm = require('@aws-cdk/aws-ssm');
 
 interface mlBackendStackProps extends cdk.StackProps {
   configFileName: string;
@@ -73,5 +73,13 @@ export class MlBackendStack extends cdk.Stack {
       endpointConfigName: endpointConfig.endpointConfigName,
       endpointName: releaseName
     })
+
+    const endpointSSMParameterName = environment + '-' + parentStackName + '-endpoint';
+    new ssm.StringParameter(this, endpointSSMParameterName, {
+      name: endpointSSMParameterName,
+      stringValue: releaseName
+    })
+    
+
   }
 }
