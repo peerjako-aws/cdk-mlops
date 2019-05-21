@@ -44,5 +44,5 @@ maxClass = max(inference['result']['classifications'][0]['classes'], key=lambda 
 pprint.pprint("Iris label with max score: %s" % (maxClass['label']))
 
 # If label with max score is not 1 (0 or 2) we throw an error that will break the codepipeline test stage
-assert maxClass['label'] == '1'
+assert maxClass['label'] == '2'
 
