@@ -8,7 +8,7 @@ import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
 
-import { githubOwner, repoName, secretGitHubOauthArn } from '../../config'
+import { githubOwner, repoName, secretGitHubOauthArn, gitBranch } from '../../config'
 import { PolicyStatementEffect } from '@aws-cdk/aws-iam';
 import { BuildEnvironmentVariableType } from '@aws-cdk/aws-codebuild';
 
@@ -35,7 +35,7 @@ export class MlPipelineStack extends cdk.Stack {
     const sourceOutput = new codepipeline.Artifact();
     const sourceAction = new codepipeline_actions.GitHubSourceAction({
         actionName: 'ml-source',
-        branch: 'master',
+        branch: gitBranch ? gitBranch : 'master',
         owner: githubOwner,
         repo: repoName,
         oauthToken: oauth.secretValue,
