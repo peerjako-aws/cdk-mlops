@@ -29,7 +29,7 @@ iris_estimator = TensorFlow(entry_point='ml-training/iris-dnn/iris_dnn_classifie
                             code_location=custom_code_upload_location,
                             train_instance_count=1,
                             train_instance_type='ml.c4.xlarge',
-                            training_steps=1000,
+                            training_steps=900,
                             evaluation_steps=100)
 
 
