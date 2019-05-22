@@ -42,3 +42,4 @@ def _generate_input_fn(training_dir, training_filename):
         y=np.array(training_set.target),
         num_epochs=None,
         shuffle=True)()
+#
